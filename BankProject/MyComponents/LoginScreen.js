@@ -16,7 +16,7 @@ class LoginScreen extends React.Component {
 
    
     state = { username: '', password: '' };
-      
+   // state = { username: '51475223166', password: '12345678' };
 
 
 
@@ -29,26 +29,60 @@ class LoginScreen extends React.Component {
 
 
     Login = () => {
-      
       var uname=this.state.username;
       var pword=this.state.password;
 
-      Alert.alert(
-        'Alert Title'+uname+pword,
-        'My Alert Msg',
-        [         
+
+      fetch('http://yazilimbakimi.pryazilim.com/api/customerservice/login', 
+      {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          IdentityNo : uname,
+            Password: pword,
+        })
+    })
+
+        .then((response) => response.json())
+        .then((responseData) =>
+         {
+          var success=responseData['Success']; 
+          if(success)
           {
-            text: 'Cancel',           
-            style: 'cancel',
-          },
-          {text: 'OK', onPress: () => this.props.navigation.navigate('MainMenu',{ welcome: 'Orçun ÖZDİL 14038963' })},
-        ],
-        {cancelable: false},
-      );
+            var CNo=responseData['ResultObj'].CustomerNo;
+            var Name=responseData['ResultObj'].Name;
+            var Surname=responseData['ResultObj'].Surname;
+            var Total=responseData['ResultObj'].TotalBalance;
+            this.props.navigation.navigate('MainMenu',{ Name: Name,Surname: Surname,CustomerNo:CNo,TotalBalance:Total });
+          }
+          else
+          {
+            var mesaj=responseData['Message']; 
+            alert(mesaj);
+          }
+               
+       
+        })
+  .catch((error) =>{
+    alert(error);
+  }) 
+
+  this.setState({username: '', password: '' });
+
+
+
+}
+  
+
+    
+      
 
 
       
-     }
+     
 
 
     render() {

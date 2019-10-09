@@ -13,6 +13,7 @@ import AccountDetailScreen from './MyComponents/AccountDetailScreen'
 import TransferSelfScreen from './MyComponents/TransferSelfScreen'
 import TransferScreen from './MyComponents/TransferScreen'
 import CreditPredictionScreen from './MyComponents/CreditPredictionScreen'
+import BillScreen from './MyComponents/BillScreen'
 //Ekranlar
 
 
@@ -28,6 +29,7 @@ const RootStack = createStackNavigator(
     TransferSelf:TransferSelfScreen,
     Transfer:TransferScreen,
     CreditPrediction:CreditPredictionScreen,
+    Bill:BillScreen,
   },
   {
     initialRouteName: 'Login',

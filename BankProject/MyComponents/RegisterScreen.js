@@ -27,8 +27,55 @@ class RegisterScreen extends React.Component {
     var _password=this.state.password;
     var _passwordRep=this.state.passwordRep;
    
-   alert("Kayı yapılıyor : "+_TCKN+" "+_name+" "+_sname+" "+_email+" "+_password+" "+_passwordRep);
-   this.props.navigation.navigate('Login');
+
+    fetch('http://yazilimbakimi.pryazilim.com/api/customerservice/register', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          IdentityNo : _TCKN,              
+          Name :_name,
+          Surname: _sname,
+          Email : _email,
+          Password : _password,
+          RePassword: _passwordRep
+      })
+  })
+
+      .then((response) => response.json())
+      .then((responseData) => 
+      {
+        var success=responseData['Success']; 
+        if(success)
+        {
+      
+          alert("Sayın "+_name+" "+_sname+", müşteri kaydınız oluşturulmuştur."+
+           "Kullanıcı adınız ve şifreniz ile giriş yapabilirsiniz!");
+  
+        }
+        else
+        {
+          var mesaj=responseData['Message']; 
+          alert(mesaj);
+        }
+
+     
+})
+.catch((error) =>{
+  alert(error);
+}) 
+
+
+
+
+
+
+
+
+  // alert("Kayı yapılıyor : "+_TCKN+" "+_name+" "+_sname+" "+_email+" "+_password+" "+_passwordRep);
+  // this.props.navigation.navigate('Login');
     
    }
 

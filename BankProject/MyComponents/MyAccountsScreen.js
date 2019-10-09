@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,Image,TouchableOpacity } from 'react-native';
+import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,Image,TouchableOpacity,Alert } from 'react-native';
 
 import Constants from 'expo-constants';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -15,6 +15,55 @@ class MyAccountsScreen extends React.Component {
     headerStyle: {backgroundColor: '#17202A',} ,
    
   };
+
+  CreateAccountConfirmation = () => {
+
+    Alert.alert(
+      'YENİ HESAP',
+      'Yeni bir hesap açmak istediğinize emin misiniz?',
+      [
+        
+        {
+          text: 'Vazgeç',          
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.CreateAccount()},
+      ],
+      {cancelable: false},
+    );
+
+   
+  }
+  CreateAccount = () => {
+    fetch('http://yazilimbakimi.pryazilim.com/api/AccountService/Create', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      } ,body: JSON.stringify({
+        CustomerId : this.props.navigation.state.params.CustomerNo,
+        Balance: '0',
+      })
+  })
+  
+      .then((response) => response.json())
+      .then((responseData) => {
+        var success=responseData['Success']; 
+        if(success)
+        {
+          alert("Hesabınız oluşturulmuştur!");
+          this.props.navigation.navigate('MyAccounts');
+        }
+        
+  
+     
+  })
+  .catch((error) =>{
+  alert(error);
+  }) 
+
+  }
+
     render() {
       return (
         <ImageBackground source={require('./../MyImages/bg_red.jpg')} style={styles.backgroundImage}>   
@@ -29,7 +78,7 @@ class MyAccountsScreen extends React.Component {
 
         <Separator/>
         < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}}
-     
+        onPress={() => { this.CreateAccountConfirmation(); }}
         >   
        <Image 
             style={styles.stretch} source={require('./../MyImages/newAccount.png')}        />
@@ -39,31 +88,10 @@ class MyAccountsScreen extends React.Component {
 
       <ScrollView>
         <View style={[styles.parent]}>
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} 
-         onPress={() => this.props.navigation.navigate('AccountDetail')}
-      >
-      <Text>140123451-5001     5000.00 TL</Text>
-      </TouchableOpacity>
+      
 
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5002     5000.00 TL</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5003     5000.00 TL</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5004     5000.00 TL</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5005     5000.00 TL</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5006     5000.00 TL</Text>
-      </TouchableOpacity>
+     {this.props.navigation.state.params.board}
+     
       
       
   </View>
