@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,Image,TouchableOpacity,Alert } from 'react-native';
+import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,
+  TextInput,Image,TouchableOpacity,Alert,Modal,TouchableHighlight } from 'react-native';
 
 import Constants from 'expo-constants';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -16,12 +17,13 @@ class AccountDetailScreen extends React.Component {
    
   };
 
+  GetAccounts = () => 
+  {
+    let board = [];
+    let Customer=this.props.navigation.state.params.Customer;
+    let CustomerId=Customer.CustomerId;
 
-  GetAccounts = () => {
-    let board = []
-    let cNo=this.props.navigation.state.params.CustomerNo;
-
-    fetch('http://yazilimbakimi.pryazilim.com/api/AccountService/GetAccountList/'+cNo, {
+    fetch('http://yazilimbakimi.pryazilim.com/api/AccountService/GetAccountList/'+CustomerId, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -35,35 +37,36 @@ class AccountDetailScreen extends React.Component {
      
         for(var i=0;i<accListCount;i++)
         {
-         let longAcc=cNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId;
-         let shortAcc=cNo+"-"+ responseData['ResultList'][i].AccountNo;
+         let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId;
+         let shortAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo;
          board.push( 
          <TouchableOpacity style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} 
-         onPress={() => { this.GetAccountDetails(longAcc)}}
+         onPress={() => { this.GetAccountDetails(longAcc,shortAcc,Customer)}}
          >
          <Text>
         {shortAcc}   ==> ({ responseData['ResultList'][i].AccountBalance} TL)
          </Text>
          </TouchableOpacity>);      
         }
-        this.props.navigation.navigate('MyAccounts',{board:board,CustomerNo:cNo});
+        this.props.navigation.navigate('MyAccounts',{board:board,Customer:Customer});
   
      
   })
   .catch((error) =>{
   alert(error);
   }) 
-
-  
-    
   }
-  GetAccountDetails = (_longAccNo) => {
 
+  GetAccountDetails = (_longAccNo,_shortAccNo,_Customer) => 
+  {   
+    this.props.navigation.navigate('AccountDetail',
+    {
+     longAccNo:_longAccNo,
+     shortAccNo:_shortAccNo,
+     Customer:_Customer
+   });    
+  }
  
-    this.props.navigation.navigate('AccountDetail',{longAccNo:_longAccNo,CustomerNo:this.props.navigation.state.params.CustomerNo});
-   
-     
-     }
    
 
 
@@ -97,7 +100,7 @@ class AccountDetailScreen extends React.Component {
   }
   DeleteAccount = () => {
 
-    var CNo=this.props.navigation.state.params.longAccNo.split('-')[0];
+    var CustomerId=this.props.navigation.state.params.Customer.CustomerId;
     var AccNo=this.props.navigation.state.params.longAccNo.split('-')[1];
     var AccId=this.props.navigation.state.params.longAccNo.split('-')[2];
    
@@ -108,7 +111,7 @@ class AccountDetailScreen extends React.Component {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       } ,body: JSON.stringify({
-        CustomerId :'1000002',
+        CustomerId :CustomerId,
         AccountId:AccId,
       })
   })
@@ -134,25 +137,39 @@ class AccountDetailScreen extends React.Component {
 
   }
 
-
+  
+  PayInto = () => {    
+    var Customer=this.props.navigation.state.params.Customer;
+    var longAcc=this.props.navigation.state.params.longAccNo;   
+    this.props.navigation.navigate('PayIntoAccount',{ Customer:Customer,longAccNo:longAcc });
+  }
 
 
 
     render() {
       return (
+       
+
         <ImageBackground source={require('./../MyImages/bg_red.jpg')} style={styles.backgroundImage}>   
         {/*Header*/}
         <SafeAreaView style={styles.container}>
+
       
-        <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
+        <Text style={{fontSize:20,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
     textShadowRadius: 10}}>HESAP DETAYI ({this.props.navigation.state.params.shortAccNo})</Text>
   
         
 
         <Separator/>
-        <View style={{flexDirection:'row',width: '100%'}}>
-        < TouchableOpacity style={{flexDirection:'row',alignItems:'center',width: '40%',marginRight:'10%'}} >   
+      
+ 
+
+      <View style={{flexDirection:'row',width: '100%'}} >
+        
+        < TouchableOpacity style={{flexDirection:'row',alignItems:'center',width: '40%',marginRight:'10%'}} 
+         onPress={() => {this.PayInto();}}
+        >   
        <Image 
             style={styles.stretch} source={require('./../MyImages/deleteAccount.png')}        />
           <Text style={{color:'white'}}>   Hesaba Para Yatır</Text>
@@ -171,31 +188,10 @@ class AccountDetailScreen extends React.Component {
 
       <ScrollView>
         <View style={[styles.parent]}>
-        {/*
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5001     5000.00 TL</Text>
-      </TouchableOpacity>
+      
 
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5002     5000.00 TL</Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5003     5000.00 TL</Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5004     5000.00 TL</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5005     5000.00 TL</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>140123451-5006     5000.00 TL</Text>
-      </TouchableOpacity>
-      */}
       
   </View>
   </ScrollView>
@@ -255,6 +251,18 @@ class AccountDetailScreen extends React.Component {
       backgroundColor: '#D5DBDB',
       borderColor: '#2C3E50', borderWidth: 3,
   },
+  child2: {
+    width: '47%', 
+    marginLeft: '1%',
+    marginRight: '1%', 
+    marginBottom:'1%',
+    aspectRatio: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius:10,
+    backgroundColor: '#D5DBDB',
+    borderColor: '#2C3E50', borderWidth: 3,
+},
   child_acc: {
     width: '98%', 
     margin: '1%', 

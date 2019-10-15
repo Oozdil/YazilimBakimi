@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "MCBU Bankası",
-    "slug": "BankProject",
+    "slug": "bankproject",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [

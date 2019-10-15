@@ -15,18 +15,9 @@ class LoginScreen extends React.Component {
     };
 
    
-    state = { username: '', password: '' };
-   // state = { username: '51475223166', password: '12345678' };
 
-
-
-
-
-
-
-
-
-
+    // state = { username: '', password: '' };
+    state = { username: '51475223166', password: '12345678' };
 
     Login = () => {
       var uname=this.state.username;
@@ -51,17 +42,15 @@ class LoginScreen extends React.Component {
          {
           var success=responseData['Success']; 
           if(success)
-          {
-            var CNo=responseData['ResultObj'].CustomerNo;
-            var Name=responseData['ResultObj'].Name;
-            var Surname=responseData['ResultObj'].Surname;
-            var Total=responseData['ResultObj'].TotalBalance;
-            this.props.navigation.navigate('MainMenu',{ Name: Name,Surname: Surname,CustomerNo:CNo,TotalBalance:Total });
+          {          
+            var Customer=responseData['ResultObj'];         
+            this.setState({username: '', password: '' });
+            this.props.navigation.navigate('MainMenu',{Customer:Customer });
           }
           else
           {
             var mesaj=responseData['Message']; 
-            alert(mesaj);
+            Alert.alert('HATALI GİRİŞ',mesaj);
           }
                
        
@@ -70,19 +59,11 @@ class LoginScreen extends React.Component {
     alert(error);
   }) 
 
-  this.setState({username: '', password: '' });
-
 
 
 }
   
 
-    
-      
-
-
-      
-     
 
 
     render() {
@@ -90,26 +71,28 @@ class LoginScreen extends React.Component {
         <ImageBackground source={require('./../MyImages/bg_red.jpg')} style={styles.backgroundImage}>   
         {/*Header*/}
         <SafeAreaView style={styles.container}>
+         
      <Separator/>
      <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
     textShadowRadius: 10}}>{'Lütfen Giriş Yapınız '}</Text>
      <Separator/>
-     <Text style={{fontSize:20}}>Kullanıcı Adınız</Text>
+     <Text style={{fontSize:20}}>T.C. Kimlik Numaranız :</Text>
       <TextInput 
         style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
         ref= {(el) => { this.username = el; }}
         onChangeText={(username) => this.setState({username})}
         value={this.state.username}
-        
+        maxLength={11}
+        keyboardType={'numeric'}
         />
-      <Text style={{fontSize:20}}>Şifreniz</Text>  
+      <Text style={{fontSize:20}}>Şifreniz :</Text>  
       <TextInput secureTextEntry={true}
         style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
         ref= {(el) => { this.password = el; }}
         onChangeText={(password) => this.setState({password})}
         value={this.state.password}
-        
+        maxLength={250}
         />
         <Separator/>
      
@@ -127,7 +110,7 @@ class LoginScreen extends React.Component {
           <Text style={{fontSize:25}}>ÜYE DEĞİLİM</Text>
           </TouchableOpacity >     
        </View>
-  
+    
    </SafeAreaView>     
   
   

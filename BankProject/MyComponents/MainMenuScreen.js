@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,Image,TouchableOpacity,Alert } from 'react-native';
+import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,
+  Image,TouchableOpacity,Alert,Picker } from 'react-native';
 
 import Constants from 'expo-constants';
+
 
 
 function Separator() {
@@ -16,15 +18,16 @@ class MainMenuScreen extends React.Component {
   };
   constructor(props) {
     super(props);
+   
 
   }
-  Logout = () => {
 
+
+  Logout = () => {
     Alert.alert(
       'ÇIKIŞ İŞLEMİ',
       'Bankacılık Uygulamasından çıkmak emin misiniz?',
-      [
-        
+      [        
         {
           text: 'Vazgeç',          
           style: 'cancel',
@@ -36,24 +39,13 @@ class MainMenuScreen extends React.Component {
   }
 
 
+  GetAccounts = () => 
+  {
+    let board = [];
+    let Customer=this.props.navigation.state.params.Customer;
+    let CustomerId=Customer.CustomerId;
 
-
- 
-  GetAccountDetails = (_longAccNo,_shortAccNo) => {
-
-
- this.props.navigation.navigate('AccountDetail',{longAccNo:_longAccNo,shortAccNo:_shortAccNo,
-  CustomerNo:this.props.navigation.state.params.CustomerNo});
-
-  
-  }
-
-
-  GetAccounts = () => {
-    let board = []
-    let cNo=this.props.navigation.state.params.CustomerNo;
-
-    fetch('http://yazilimbakimi.pryazilim.com/api/AccountService/GetAccountList/'+cNo, {
+    fetch('http://yazilimbakimi.pryazilim.com/api/AccountService/GetAccountList/'+CustomerId, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -67,28 +59,99 @@ class MainMenuScreen extends React.Component {
      
         for(var i=0;i<accListCount;i++)
         {
-         let longAcc=cNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId;
-         let shortAcc=cNo+"-"+ responseData['ResultList'][i].AccountNo;
+         let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId;
+         let shortAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo;
          board.push( 
          <TouchableOpacity style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} 
-         onPress={() => { this.GetAccountDetails(longAcc,shortAcc)}}
+         onPress={() => { this.GetAccountDetails(longAcc,shortAcc,Customer)}}
          >
          <Text>
         {shortAcc}   ==> ({ responseData['ResultList'][i].AccountBalance} TL)
          </Text>
          </TouchableOpacity>);      
         }
-        this.props.navigation.navigate('MyAccounts',{board:board,CustomerNo:cNo});
+        this.props.navigation.navigate('MyAccounts',{board:board,Customer:Customer});
   
      
   })
   .catch((error) =>{
   alert(error);
   }) 
-
-  
-    
   }
+
+  GetAccountDetails = (_longAccNo,_shortAccNo,_Customer) => 
+  {   
+    this.props.navigation.navigate('AccountDetail',
+    {
+     longAccNo:_longAccNo,
+     shortAccNo:_shortAccNo,
+     Customer:_Customer
+   });    
+  }
+
+
+
+  GetAccountsToPicker = (navigationIndex) => 
+  {   
+    
+    let outgoingBoard = [];
+    let inCommingBoard = [];
+    let Customer=this.props.navigation.state.params.Customer;
+    let CustomerId=Customer.CustomerId;
+
+    fetch('http://yazilimbakimi.pryazilim.com/api/AccountService/GetAccountList/'+CustomerId, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }
+  })
+  
+      .then((response) => response.json())
+      .then((responseData) => {
+        var accListCount=responseData['ResultList'].length;
+     
+        for(var i=0;i<accListCount;i++)
+        {
+         var CustomerNo=Customer.CustomerNo;
+         var AccountNo=responseData['ResultList'][i].AccountNo;
+         var Balance = responseData['ResultList'][i].AccountBalance;
+         var AccountId=responseData['ResultList'][i].AccountId;
+         
+         var AccInfo=CustomerNo+"-"+AccountNo+"-("+Balance+" TL)";
+         var AccInfo2=AccountId+"-"+Balance;
+         
+         outgoingBoard.push(<Picker.Item label={AccInfo}value={AccInfo2} />);      
+        
+         //if(i>0)
+         inCommingBoard.push(<Picker.Item label={AccInfo}value={AccInfo2} />);     
+        }
+      
+
+
+
+        if(navigationIndex==1)
+        {
+        this.props.navigation.navigate('TransferSelf',{outgoingBoard:outgoingBoard,inCommingBoard:inCommingBoard,
+          Customer:this.props.navigation.state.params.Customer});
+        }
+
+        if(navigationIndex==2)
+        {
+        this.props.navigation.navigate('Transfer',{outgoingBoard:outgoingBoard,
+          Customer:this.props.navigation.state.params.Customer});}
+      
+      
+      
+      
+  
+     
+  })
+  .catch((error) =>{
+  alert(error);
+  }) 
+  }
+
 
 
 
@@ -106,7 +169,8 @@ class MainMenuScreen extends React.Component {
        
 
        <Text style={{color:'white',fontSize:18}}>Sayın : 
-       {this.props.navigation.state.params.Name} {this.props.navigation.state.params.Surname} {this.props.navigation.state.params.CustomerNo}
+       {this.props.navigation.state.params.Customer.Name} {this.props.navigation.state.params.Customer.Surname} (
+       {this.props.navigation.state.params.Customer.CustomerNo} )
        </Text>
        <Separator/>
 
@@ -116,22 +180,36 @@ class MainMenuScreen extends React.Component {
         <Separator/>
         <View style={[styles.parent]}>
    
-        <Text style={{color:'white',fontSize:18}}>Varlıklarım : {this.props.navigation.state.params.TotalBalance} TL
-       </Text>
-      <TouchableOpacity style={[styles.child_2, {backgroundColor: '#D5DBDB'} ]} 
-      
-      onPress={() => { this.GetAccounts(); }}
-      >
+       
+
+
+      <TouchableOpacity style={[styles.child_2, {backgroundColor: '#D5DBDB'} ]}       
+      onPress={() => { this.GetAccounts(); }}      >
        <Text>Hesap İşlemlerim</Text>
       </TouchableOpacity>
    
+
+
+
+
+
+
+
+
+
+
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} 
-        onPress={() => this.props.navigation.navigate('TransferSelf')}
+     
+       onPress={() => { this.GetAccountsToPicker(1); }}
+      
       >
        <Text>Virman</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]}
-      onPress={() => this.props.navigation.navigate('Transfer')} >
+    
+      onPress={() => { this.GetAccountsToPicker(2); }}
+      >
+     
        <Text>Havale</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]}
@@ -144,13 +222,17 @@ class MainMenuScreen extends React.Component {
          >
        <Text>Kredi Tahminim</Text>
        </TouchableOpacity>
+       <TouchableOpacity style={[styles.child_2, {backgroundColor: '#D5DBDB'} ]}       
+      onPress={() => this.props.navigation.navigate('PersonalDetail',{CustomerNo:this.props.navigation.state.params.CustomerNo})}      >
+       <Text>Kişisel Bilgilerimi Güncelle</Text>
+      </TouchableOpacity>
   </View>
   <Separator/>
        < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}}
          onPress={() => this.Logout()} 
        >
        <Image 
-            style={styles.stretch} source={require('./../MyImages/exit2.png')}        />
+            style={styles.stretch} source={require('./../MyImages/exit2.png')}  />
             <Text style={{color:'white'}}> Güvenli Çıkış</Text>
       </TouchableOpacity>
   
@@ -194,7 +276,7 @@ class MainMenuScreen extends React.Component {
   child: {
       width: '48%', 
       margin: '1%', 
-      aspectRatio: 1.50,
+      aspectRatio: 2.50,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius:15,
@@ -204,7 +286,7 @@ class MainMenuScreen extends React.Component {
   child_2: {
     width: '98%', 
     margin: '1%', 
-    aspectRatio: 3.50,
+    aspectRatio: 4,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius:15,

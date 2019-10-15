@@ -5,6 +5,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import Constants from 'expo-constants';
 
 //Ekranlar
+import Test from './MyComponents/Test'
 import LoginScreen from './MyComponents/LoginScreen'
 import RegisterScreen from './MyComponents/RegisterScreen'
 import MainMenuScreen from './MyComponents/MainMenuScreen'
@@ -14,6 +15,9 @@ import TransferSelfScreen from './MyComponents/TransferSelfScreen'
 import TransferScreen from './MyComponents/TransferScreen'
 import CreditPredictionScreen from './MyComponents/CreditPredictionScreen'
 import BillScreen from './MyComponents/BillScreen'
+import PayIntoAccountScreen from './MyComponents/PayIntoAccountScreen'
+import PersonalDetailScreen from './MyComponents/PersonalDetailScreen'
+import BillDetailScreen from './MyComponents/BillDetailScreen';
 //Ekranlar
 
 
@@ -21,6 +25,7 @@ import BillScreen from './MyComponents/BillScreen'
 
 const RootStack = createStackNavigator(
   {
+    Test:Test,
     Login: LoginScreen,
     Register: RegisterScreen,
     MainMenu: MainMenuScreen,
@@ -30,19 +35,21 @@ const RootStack = createStackNavigator(
     Transfer:TransferScreen,
     CreditPrediction:CreditPredictionScreen,
     Bill:BillScreen,
+    BillDetail:BillDetailScreen,
+    PayIntoAccount:PayIntoAccountScreen,
+    PersonalDetail:PersonalDetailScreen
   },
   {
     initialRouteName: 'Login',
   }
 );
-
 const AppContainer = createAppContainer(RootStack);
 
 export default class App extends React.Component {
-  
+
   render() {
     
-    return <AppContainer />;
+    return <AppContainer     />;
   }
 }
 

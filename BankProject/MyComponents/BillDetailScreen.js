@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,Image,TouchableOpacity,Picker } from 'react-native';
+import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,
+  TextInput,Image,TouchableOpacity,Picker,CheckBox } from 'react-native';
 
 import Constants from 'expo-constants';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -8,7 +9,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 function Separator() {
     return <View style={styles.separator} />;
   }
-class BillScreen extends React.Component {
+class BillDetailScreen extends React.Component {
   static navigationOptions = {
     title: 'MCBU Bank Cep Şubesi',
     headerTintColor:'white',
@@ -18,10 +19,9 @@ class BillScreen extends React.Component {
   state = {
     billType: 'java',
   };
-  GotoBillDetail=()=>{
 
-    this.props.navigation.navigate('BillDetail');
-  }
+
+
     render() {
       return (
         <ImageBackground source={require('./../MyImages/bg_red.jpg')} style={styles.backgroundImage}>   
@@ -29,16 +29,17 @@ class BillScreen extends React.Component {
         <SafeAreaView style={styles.container}>
       
       <View style={{flex:2}}>
-        <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
+        <Text style={{fontSize:20,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
-    textShadowRadius: 10}}>{'Kayıtlı Faturalarım'}</Text>
+    textShadowRadius: 10}}>{'Borç Detayı (Elektrik - 2548745)'}</Text>
   <Separator/>
   
 
-      <ScrollView Syle={{flexGrow: 0.05}}>
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]}
+  <ScrollView Syle={{flexGrow: 0.05}}>
+      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB',flexDirection:'row'} ]}
         onPress={() => { this.GotoBillDetail()}} >
-      <Text>Gediz Elektrik - 2548745 - İşyeri Elektriğim</Text>
+       <Image style={styles.stretch} source={require('./../MyImages/unchecked.png')}/>
+      <Text>   Gediz Elektrik - 2548745</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
       <Text>İZSU- 4561238</Text>
@@ -53,9 +54,9 @@ class BillScreen extends React.Component {
       </View>
   <Separator/>
   <View style={{flex:3}}>
-  <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
+  <Text style={{fontSize:15,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
-    textShadowRadius: 10}}>{'Fatura No İle Ödeme'}</Text>
+    textShadowRadius: 10}}>{'Seçili Faturalar Toplamı : 135,54 TL'}</Text>
   <Separator/>
   <View style={{borderRadius: 10, borderWidth: 1, borderColor: '#bdc3c7', overflow: 'hidden',backgroundColor:'#CACFD2'}}>
   <Picker
@@ -68,8 +69,14 @@ class BillScreen extends React.Component {
   <Picker.Item label="Telefon" value="js" />
 </Picker>
 </View >
-<Text style={{color:'white'}}>Abone / Sözleşme No</Text>
+<Separator/>
+< TouchableOpacity style={{flexDirection:'row',alignItems:'center'}} >
+       <Image 
+            style={styles.stretch} source={require('./../MyImages/exit2.png')}        />
+            <Text style={{color:'white'}}>   Güvenli Çıkış</Text>
+      </TouchableOpacity>
   <View style={{borderRadius: 10, borderWidth: 1, borderColor: '#bdc3c7',backgroundColor:'#CACFD2',height:30}}>
+
   <TextInput   />
 </View >
 <TouchableOpacity  style={[styles.child, {marginTop:20,backgroundColor: '#943126',borderColor: 'white', borderWidth: 3,} ]}
@@ -128,7 +135,7 @@ class BillScreen extends React.Component {
       marginLeft: '5%',
       marginRight: '5%', 
       marginBottom:'1%',
-      aspectRatio: 7,
+      aspectRatio: 8,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius:10,
@@ -143,4 +150,4 @@ class BillScreen extends React.Component {
   }
   });
 
-  export default BillScreen;
+  export default BillDetailScreen;
