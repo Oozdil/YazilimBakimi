@@ -35,19 +35,19 @@ class BillScreen extends React.Component {
   <Separator/>
   
 
-      <ScrollView Syle={{flexGrow: 0.05}}>
+      <ScrollView Style={{flexGrow: 0.05}}>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]}
         onPress={() => { this.GotoBillDetail()}} >
-      <Text>Gediz Elektrik - 2548745 - İşyeri Elektriğim</Text>
+      <Text>Elektrik - 2548745 - İşyeri Elektriğim</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>İZSU- 4561238</Text>
+      <Text>SU- 4561238</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>Telekom- 2324561231</Text>
+      <Text>Telefon- 2324561231</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>Gediz Elektrik - 2548745 - Ev Elektriğim</Text>
+      <Text>Elektrik - 2548745 - Ev Elektriğim</Text>
       </TouchableOpacity>
       </ScrollView>
       </View>

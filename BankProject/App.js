@@ -18,6 +18,7 @@ import BillScreen from './MyComponents/BillScreen'
 import PayIntoAccountScreen from './MyComponents/PayIntoAccountScreen'
 import PersonalDetailScreen from './MyComponents/PersonalDetailScreen'
 import BillDetailScreen from './MyComponents/BillDetailScreen';
+import WithDrawMoneyScreen from './MyComponents/WithDrawMoneyScreen'
 //Ekranlar
 
 
@@ -37,7 +38,8 @@ const RootStack = createStackNavigator(
     Bill:BillScreen,
     BillDetail:BillDetailScreen,
     PayIntoAccount:PayIntoAccountScreen,
-    PersonalDetail:PersonalDetailScreen
+    PersonalDetail:PersonalDetailScreen,
+    WithDrawMoney:WithDrawMoneyScreen
   },
   {
     initialRouteName: 'Login',

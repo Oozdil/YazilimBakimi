@@ -97,11 +97,10 @@ class RegisterScreen extends React.Component {
 
       <Text style={{fontSize:15}}>T.C. Kimlik Numaranız :</Text>
       <TextInput 
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
+       style={{ height: 35, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.TCKN = el; }}
        onChangeText={(TCKN) => this.setState({TCKN})}
-       value={this.state.TCKN}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}
+       value={this.state.TCKN}       
         maxLength={11}
         keyboardType={'numeric'}
         />
@@ -109,31 +108,34 @@ class RegisterScreen extends React.Component {
 
      <Text style={{fontSize:15}}>Adınız :</Text>
      <TextInput 
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
+       style={{ height: 35, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.name = el; }}
        onChangeText={(name) => this.setState({name})}
        value={this.state.name}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+     
+        />
 
 
      <Text style={{fontSize:15}}>Soyadınız</Text>
      <TextInput 
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
+       style={{ height: 35, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.sname = el; }}
        onChangeText={(sname) => this.setState({sname})}
        value={this.state.sname}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+      
+        />
 
 
   
         
      <Text style={{fontSize:15}}>Email Adresiniz</Text>
      <TextInput 
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
+       style={{ height: 35, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.email = el; }}
        onChangeText={(email) => this.setState({email})}
        value={this.state.email}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+    
+        />
 
 
 
@@ -141,19 +143,19 @@ class RegisterScreen extends React.Component {
 
       <Text style={{fontSize:15}}>Şifreniz</Text>  
       <TextInput secureTextEntry={true}
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
+       style={{ height: 35, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.password = el; }}
        onChangeText={(password) => this.setState({password})}
        value={this.state.password}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+       />
 
       <Text style={{fontSize:15}}>Şifreniz Tekrar</Text>  
       <TextInput secureTextEntry={true}
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
+       style={{ height: 35, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.passwordRep = el; }}
        onChangeText={(passwordRep) => this.setState({passwordRep})}
        value={this.state.passwordRep}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}
+      
                />
 
 
@@ -213,7 +215,7 @@ class RegisterScreen extends React.Component {
   child: {
       width: '98%', 
       margin: '1%', 
-      aspectRatio: 7,
+      aspectRatio: 5,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius:15

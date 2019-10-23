@@ -4,7 +4,7 @@ import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,
 
 import Constants from 'expo-constants';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 function Separator() {
     return <View style={styles.separator} />;
@@ -57,8 +57,26 @@ class TransferSelfScreen extends React.Component {
  {
   var amount=this.state._amount;
   amount=parseFloat(amount);
-  var outgoingacc=this.state.outGoingAccount.split('-')[0];
-  var incommingacc=this.state.inCommingAccount.split('-')[0];
+  var outgoingacc="";
+  var incommingacc="";
+
+
+try
+{
+   outgoingacc=this.state.outGoingAccount.split('-')[0];
+   incommingacc=this.state.inCommingAccount.split('-')[0];
+}
+catch
+{
+
+}
+if(outgoingacc=="" || incommingacc=="")
+{
+  alert("Lütfen hesap seçiniz");
+  return;
+}
+
+
   if(outgoingacc==incommingacc)
   {
     alert("Aynı hesaba virman yapamazsınız!");
@@ -81,7 +99,7 @@ class TransferSelfScreen extends React.Component {
   var explanation=this.state.explanation;
   Alert.alert(
     'VİRMAN İŞLEMİ',
-     amount+'TL tutarında virman yapmak istediğinize emin misiniz?',
+     amount+' TL tutarında virman yapmak istediğinize emin misiniz?',
     [
       
       {
@@ -125,7 +143,7 @@ class TransferSelfScreen extends React.Component {
          
         if(success)
         {
-          Alert.alert('VİRMAN BAŞARI İLE YAPILDI',"Hesabınıza "+_amount+"TL virman yaptınız.");
+          Alert.alert('VİRMAN BAŞARI İLE YAPILDI',"Hesabınıza "+_amount+" TL virman yaptınız.");
           this.props.navigation.navigate('MainMenu',{Customer:Customer });
         }
         else
@@ -139,22 +157,24 @@ class TransferSelfScreen extends React.Component {
 .catch((error) =>{
   alert(error);
 }) 
-
-
-
-
-
-
-
-
-
-
-
  }
 
 
 
-
+ Logout = () => {
+  Alert.alert(
+    'ÇIKIŞ İŞLEMİ',
+    'Bankacılık Uygulamasından çıkmak emin misiniz?',
+    [        
+      {
+        text: 'Vazgeç',          
+        style: 'cancel',
+      },
+      {text: 'Evet', onPress: () => this.props.navigation.navigate('Login',{username:'',password:''})},
+    ],
+    {cancelable: false},
+  );
+}
 
 
 
@@ -168,6 +188,12 @@ class TransferSelfScreen extends React.Component {
       return (
         <ImageBackground source={require('./../MyImages/bg_red.jpg')} style={styles.backgroundImage}>   
         {/*Header*/}
+        <KeyboardAwareScrollView enableOnAndroid={true}     
+      resetScrollToCoords={{ x: 0, y: 0 }}  
+      scrollEnabled={false}
+      extraScrollHeight={100}
+    >
+        <ScrollView >
         <SafeAreaView style={styles.container}>
       
         <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
@@ -240,14 +266,18 @@ class TransferSelfScreen extends React.Component {
 
 
   <Separator/>
-       < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}} >
+  < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}}
+         onPress={() => this.Logout()} 
+       >
        <Image 
             style={styles.stretch} source={require('./../MyImages/exit2.png')}        />
             <Text style={{color:'white'}}>   Güvenli Çıkış</Text>
       </TouchableOpacity>
   
        </SafeAreaView>     
+       </ScrollView >
   
+  </KeyboardAwareScrollView>
   
        
         </ImageBackground>

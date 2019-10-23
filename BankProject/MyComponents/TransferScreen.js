@@ -4,7 +4,7 @@ import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,
 
 import Constants from 'expo-constants';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 function Separator() {
     return <View style={styles.separator} />;
@@ -21,9 +21,11 @@ class TransferScreen extends React.Component {
  this.state={
    outGoingAccount:'',  
    targetValid:false,
-   targetCustomerFullName:'*******-****',
+   targetCustomerFullName:'',
    _amount: '0' ,
-   explanation:'Havale...'
+   explanation:'Havale...',
+   TargetCustomerNo:'', 
+   TargetCustomerAccNo:''
  }
 
   }
@@ -66,7 +68,30 @@ class TransferScreen extends React.Component {
     
       var availableBalance=this.state.outGoingAccount.split('-')[1];
       availableBalance=parseFloat(availableBalance);
-     
+
+
+
+      
+      var outgoingacc="";
+      var incommingacc="";
+    
+    
+    try
+    {
+       outgoingacc=this.state.outGoingAccount.split('-')[0];      
+    }
+    catch
+    {
+    
+    }
+    if(outgoingacc=="")
+    {
+      alert("Lütfen hesap seçiniz");
+      return;
+    }
+
+
+
       if(amount>availableBalance)
       {
         alert("Bakiyeniz bu işlem için yeterli değil");
@@ -75,7 +100,7 @@ class TransferScreen extends React.Component {
       var explanation=this.state.explanation;
    Alert.alert(
      'HAVALE İŞLEMİ',
-      this.state.targetCustomerFullName+"adlı müşteriye"+amount+'TL tutarında havale yapmak istediğinize emin misiniz?',
+      this.state.targetCustomerFullName+" adlı müşteriye "+amount+' TL tutarında havale yapmak istediğinize emin misiniz?',
      [
        
        {
@@ -83,7 +108,7 @@ class TransferScreen extends React.Component {
          style: 'cancel',
        },
        {text: 'Evet', 
-      // onPress: () => this.TransferMoney(outgoingacc,incommingacc,amount,explanation)
+       onPress: () => this.TransferMoney(outgoingacc,amount,explanation)
       },
      ],
      {cancelable: false},
@@ -95,6 +120,67 @@ class TransferScreen extends React.Component {
       alert("Havale yapmak istediğiniz müşteri bulunamadı");
     }
   }
+
+  TransferMoney=(_outgoingacc,_amount,_explanation)=>
+  {
+   
+     var Customer=this.props.navigation.state.params.Customer;
+     var CustomerId=Customer.CustomerId;
+     var targetCustomerNo=this.state.TargetCustomerNo;
+     var targetAccountNo=this.state.TargetCustomerAccNo;
+    //  alert(_outgoingacc+"-"+targetCustomerNo+"-"+targetAccountNo+"-"+_amount+"-"+_explanation+CustomerId);
+     fetch('http://yazilimbakimi.pryazilim.com/api/TransferService/transfer', 
+     {
+       method: 'POST',
+       headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+       },
+       body: JSON.stringify({          
+           OwnerAccountId:_outgoingacc,
+           TargetCustomerNo:targetCustomerNo,
+           TargetAccountNo:targetAccountNo,
+           TotalAmount:_amount,
+           Description:_explanation
+       })
+   })
+ 
+       .then((response) => response.json())
+       .then((responseData) =>
+        {
+         var success=responseData['Success']; 
+          
+         if(success)
+         {
+           Alert.alert('HAVALE BAŞARI İLE YAPILDI',"Hesabınıza "+_amount+" TL havale yaptınız.");    
+
+           this.props.navigation.navigate('MainMenu',{Customer:Customer });
+         }
+         else
+         {
+           var mesaj=responseData['Message']; 
+           Alert.alert('HAVALE YAPILAMADI',mesaj);
+         }
+              
+      
+       })
+ .catch((error) =>{
+   alert(error);
+ }) 
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -111,25 +197,135 @@ class TransferScreen extends React.Component {
         {
           var targetCustomerNo=value.split('-')[0];
           var targetAccountNo=value.split('-')[1];
-          //Müşteri isim sorgulama
-          this.setState({
-            targetValid:true,
-            targetCustomerFullName:'Orçun ÖZDİL'
-          
-          });
 
-          
+          if(targetCustomerNo.length==7)
+          {          
+            if(targetCustomerNo==this.props.navigation.state.params.Customer.CustomerNo)
+            {            
+              alert("Bu size ait bir hesap numarası! Kendinize para gönderebilmek için lütfen virman adımını kullanınız.");
+              value=value.substring(0,6);
+            }
+            else{
+              this.FindCustomer(targetCustomerNo,targetAccountNo);
+            }
+        
+          }
+          else{
+            alert("Lütfen Hesap numarasını 1000000-1001 formatında giriniz");
+          }
         }
-
+    }
+    else{
+      this.setState({
+        targetValid:false,
+        targetCustomerFullName:''      
+      });  
     }
     
     
     this.setState({incommingAccount:value})
   }
+  Logout = () => {
+    Alert.alert(
+      'ÇIKIŞ İŞLEMİ',
+      'Bankacılık Uygulamasından çıkmak emin misiniz?',
+      [        
+        {
+          text: 'Vazgeç',          
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.props.navigation.navigate('Login',{username:'',password:''})},
+      ],
+      {cancelable: false},
+    );
+  }
+  FindCustomer=(CustomerNo,AccNo)=>
+  {    
+    fetch('http://yazilimbakimi.pryazilim.com/api/CustomerService/GetCustomerDetailByNo/'+CustomerNo, 
+    {
+      method: 'GET',
+      headers: {'Accept': 'application/json','Content-Type': 'application/json'},     
+     }).then((response) => response.json())
+      .then((responseData) =>
+       {
+         var _CustomerNo='';
+         var _CustomerId='';
+         var _CustomerName='';
+         var _CustomerSurname='';
+
+         try{
+           _CustomerNo=responseData['ResultObj'].CustomerNo;
+           _CustomerId=responseData['ResultObj'].CustomerId;
+           _CustomerName=responseData['ResultObj'].Name;
+           _CustomerSurname=responseData['ResultObj'].Surname;          
+            }
+        catch
+         {
+           alert("Müşteri Bulunamadı");
+           return;
+         }
+        finally
+        {
+          this.setState({ TargetCustomerNo:_CustomerNo,targetCustomerFullName: _CustomerName+" "+_CustomerSurname });
+        }
+       
+
+         if(this.state.CustomerNo!='')
+         {
+         var accFound=false;
+          fetch('http://yazilimbakimi.pryazilim.com/api/AccountService/GetAccountList/'+_CustomerId, 
+          {
+            method: 'GET',
+            headers: {'Accept': 'application/json','Content-Type': 'application/json'},           
+          }).then((response) => response.json())
+            .then((responseData) =>
+             {
+              var accListCount=responseData['ResultList'].length;
+              for(var i=0;i<accListCount;i++)
+              {        
+               var AccountNo=responseData['ResultList'][i].AccountNo;  
+                 
+                  if(AccountNo==AccNo)
+                  {                    
+                    accFound=true;
+                    this.setState({TargetCustomerAccNo:AccountNo});
+                    
+                  }  
+              } 
+              
+              if(!accFound)
+              {
+                alert("Hesap bulunamadı");
+                this.setState({targetValid:false}); 
+              }
+              else{
+                this.setState({targetValid:true});           
+              }
+              
+            })
+      .catch((error) =>{
+        alert(error);
+      })               
+         }     
+      })
+      .catch((error) =>{
+        alert(error);
+      }) 
+ }
+
+
+
     render() {
       return (
         <ImageBackground source={require('./../MyImages/bg_red.jpg')} style={styles.backgroundImage}>   
         {/*Header*/}
+
+        <KeyboardAwareScrollView enableOnAndroid={true}     
+      resetScrollToCoords={{ x: 0, y: 0 }}  
+      scrollEnabled={false}
+      extraScrollHeight={100}
+    >
+        <ScrollView >
         <SafeAreaView style={styles.container}>
       
         <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
@@ -153,7 +349,7 @@ class TransferScreen extends React.Component {
 </Picker>
 </View >
 
-  <Text style={{color:'white'}}>Alan Hesap({this.state.targetCustomerFullName}})</Text>
+  <Text style={{color:'white'}}>Alan Hesap({this.state.targetCustomerFullName})</Text>
   <View style={{borderRadius: 10, borderWidth: 1, borderColor: '#bdc3c7',backgroundColor:'#CACFD2',height:40}}>
   <TextInput  
     style={{ height: 40, fontSize:20,
@@ -200,7 +396,9 @@ class TransferScreen extends React.Component {
 
 
   <Separator/>
-       < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}} >
+  < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}}
+         onPress={() => this.Logout()} 
+       >
        <Image 
             style={styles.stretch} source={require('./../MyImages/exit2.png')}        />
             <Text style={{color:'white'}}>   Güvenli Çıkış</Text>
@@ -208,7 +406,9 @@ class TransferScreen extends React.Component {
   
        </SafeAreaView>     
   
+       </ScrollView >
   
+  </KeyboardAwareScrollView>
        
         </ImageBackground>
       );

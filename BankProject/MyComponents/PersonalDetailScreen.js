@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,Image,TouchableOpacity } from 'react-native';
+import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,Image,TouchableOpacity,ScrollView,Alert } from 'react-native';
 
 import Constants from 'expo-constants';
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 function Separator() {
     return <View style={styles.separator} />;
@@ -16,20 +16,95 @@ class PersonalDetailScreen extends React.Component {
     headerStyle: {backgroundColor: '#17202A',} 
   };
 
-  state = { TCKN: '', name: '',sname: '',email: '',password: '',passwordRep: '' };
-
-  Register = () => {
-      
-    var _TCKN=this.state.TCKN;
-    var _name=this.state.name;
-    var _sname=this.state.sname;
-    var _email=this.state.email;
-    var _password=this.state.password;
-    var _passwordRep=this.state.passwordRep;
+ 
+  
+  constructor(props) {
+    super(props);
+    this.state={
+    CustomerId:this.props.navigation.state.params.Customer.CustomerId,
+    Name:this.props.navigation.state.params.Customer.Name,
+    Surname:this.props.navigation.state.params.Customer.Surname,
+    Email:this.props.navigation.state.params.Customer.Email,
+    Address:this.props.navigation.state.params.Customer.Address  
+    }
    
-   alert("Kayı yapılıyor : "+_TCKN+" "+_name+" "+_sname+" "+_email+" "+_password+" "+_passwordRep);
-   this.props.navigation.navigate('Login');
+  }
+  Logout = () => {
+    Alert.alert(
+      'ÇIKIŞ İŞLEMİ',
+      'Bankacılık Uygulamasından çıkmak emin misiniz?',
+      [        
+        {
+          text: 'Vazgeç',          
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.props.navigation.navigate('Login',{username:'',password:''})},
+      ],
+      {cancelable: false},
+    );
+  }
+
+  UpdateConfirmation = () => {
+        
+    Alert.alert(
+      'GÜNCELLEME İŞLEMİ',
+      'Bilgilerinizi güncellemek istediğinize emin misiniz?',
+      [        
+        {
+          text: 'Vazgeç',          
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.Update()},
+      ],
+      {cancelable: false},
+    ); 
+    }
+
+  Update = () => {
+  var email=this.state.Email;
+  var name=this.state.Name;
+  var sname=this.state.Surname;
+  var address=this.state.Address;
+  var CId=this.state.CustomerId;
+
+  alert("Güncelleniyor :"+email+" "+name+" "+sname+" "+address+" "+CId);  
+  fetch('http://yazilimbakimi.pryazilim.com/api/customerservice/update', 
+  {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        CustomerId :CId,
+        Name:name,
+        Surname:sname,
+        Email:email,
+        Address:address
+    })
+})
+
+    .then((response) => response.json())
+    .then((responseData) =>
+     {
+      var success=responseData['Success']; 
+      if(success)
+      {       
+       alert(responseData['Message']);
+
     
+      }
+      else
+      {
+        var mesaj=responseData['Message']; 
+        Alert.alert('HATALI GİRİŞ',mesaj);
+      }
+           
+   
+    })
+.catch((error) =>{
+alert(error);
+})   
    }
 
 
@@ -37,6 +112,12 @@ class PersonalDetailScreen extends React.Component {
       return (
         <ImageBackground source={require('./../MyImages/bg_red.jpg')} style={styles.backgroundImage}>   
         {/*Header*/}
+        <KeyboardAwareScrollView enableOnAndroid={true}     
+      resetScrollToCoords={{ x: 0, y: 0 }}  
+      scrollEnabled={false}
+      extraScrollHeight={100}
+    >
+        <ScrollView >
         <SafeAreaView style={styles.container}>   
      <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
@@ -48,19 +129,19 @@ class PersonalDetailScreen extends React.Component {
      <Text style={{fontSize:15}}>Adınız</Text>
      <TextInput 
        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.name = el; }}
-       onChangeText={(name) => this.setState({name})}
-       value={this.state.name}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+       ref= {(el) => { this.Name = el; }}
+       onChangeText={(Name) => this.setState({Name})}
+       value={this.state.Name}
+     />
 
 
      <Text style={{fontSize:15}}>Soyadınız</Text>
      <TextInput 
        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.sname = el; }}
-       onChangeText={(sname) => this.setState({sname})}
-       value={this.state.sname}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+       ref= {(el) => { this.Surname = el; }}
+       onChangeText={(Surname) => this.setState({Surname})}
+       value={this.state.Surname}
+       />
 
 
   
@@ -68,30 +149,24 @@ class PersonalDetailScreen extends React.Component {
      <Text style={{fontSize:15}}>Email Adresiniz</Text>
      <TextInput 
        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.email = el; }}
-       onChangeText={(email) => this.setState({email})}
-       value={this.state.email}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+       ref= {(el) => { this.Email = el; }}
+       onChangeText={(Email) => this.setState({Email})}
+       value={this.state.Email}
+       />
 
 
 
 
 
-      <Text style={{fontSize:15}}>Şifreniz</Text>  
-      <TextInput secureTextEntry={true}
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.password = el; }}
-       onChangeText={(password) => this.setState({password})}
-       value={this.state.password}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
-
-      <Text style={{fontSize:15}}>Şifreniz Tekrar</Text>  
-      <TextInput secureTextEntry={true}
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.passwordRep = el; }}
-       onChangeText={(passwordRep) => this.setState({passwordRep})}
-       value={this.state.passwordRep}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+      <Text style={{fontSize:15}}>Adresiniz</Text>  
+      <TextInput 
+       style={{ height: 120, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
+       ref= {(el) => { this.Address = el; }}
+       onChangeText={(Address) => this.setState({Address})}
+       value={this.state.Address}
+     
+       numberOfLines={4}/>
+      
 
 
         <Separator/>
@@ -100,17 +175,25 @@ class PersonalDetailScreen extends React.Component {
 
       <View style={[styles.parent]}>
           <TouchableOpacity  style={[styles.child, {backgroundColor: '#943126',borderColor: 'white', borderWidth: 3,} ]}
-          onPress={() => { this.Register(); }}
+          onPress={() => { this.UpdateConfirmation(); }}
           >
-          <Text style={{fontSize:25,color:'white'}}>KAYIT OL</Text>
+          <Text style={{fontSize:25,color:'white'}}>BİLGİLERİMİ GÜNCELLE</Text>
           </TouchableOpacity >         
          
        </View>
-
+       < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}}
+         onPress={() => this.Logout()} 
+       >
+       <Image 
+            style={styles.stretch} source={require('./../MyImages/exit2.png')}  />
+            <Text style={{color:'white'}}> Güvenli Çıkış</Text>
+      </TouchableOpacity>
 
    </SafeAreaView>     
   
+   </ScrollView >
   
+   </KeyboardAwareScrollView>
        
         </ImageBackground>
       );
@@ -156,8 +239,8 @@ class PersonalDetailScreen extends React.Component {
       borderRadius:15
   },
   stretch: {
-    width: 50,
-    height: 50,
+    width: 25,
+    height: 25,
     resizeMode: 'stretch'
   }
   });

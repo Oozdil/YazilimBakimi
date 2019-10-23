@@ -16,13 +16,13 @@ class LoginScreen extends React.Component {
 
    
 
-    // state = { username: '', password: '' };
+   //  state = { username: '', password: '' };
     state = { username: '51475223166', password: '12345678' };
 
     Login = () => {
       var uname=this.state.username;
       var pword=this.state.password;
-
+      // alert(uname+" "+pword);
 
       fetch('http://yazilimbakimi.pryazilim.com/api/customerservice/login', 
       {
@@ -42,7 +42,8 @@ class LoginScreen extends React.Component {
          {
           var success=responseData['Success']; 
           if(success)
-          {          
+          {       
+           // alert(JSON.stringify(responseData));   
             var Customer=responseData['ResultObj'];         
             this.setState({username: '', password: '' });
             this.props.navigation.navigate('MainMenu',{Customer:Customer });

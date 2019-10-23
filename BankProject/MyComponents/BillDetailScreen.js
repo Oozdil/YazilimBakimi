@@ -37,18 +37,20 @@ class BillDetailScreen extends React.Component {
 
   <ScrollView Syle={{flexGrow: 0.05}}>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB',flexDirection:'row'} ]}
+        onPress={() => { this.GotoBillDetail()}} >      
+      <Text>Haziran 2019 - Fat.No:1231456 Tutar : 132,15 TL</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB',flexDirection:'row'} ]}
         onPress={() => { this.GotoBillDetail()}} >
-       <Image style={styles.stretch} source={require('./../MyImages/unchecked.png')}/>
-      <Text>   Gediz Elektrik - 2548745</Text>
+       <Text>Temmuz 2019 - Fat.No:1231456 Tutar : 132,15 TL</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>İZSU- 4561238</Text>
+      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB',flexDirection:'row'} ]}
+        onPress={() => { this.GotoBillDetail()}} >
+       <Text>Ağustos 2019 - Fat.No:1231456 Tutar : 132,15 TL</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>Telekom- 2324561231</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} >
-      <Text>Gediz Elektrik - 2548745 - Ev Elektriğim</Text>
+      <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB',flexDirection:'row'} ]}
+        onPress={() => { this.GotoBillDetail()}} >
+       <Text>Eylül 2019 - Fat.No:1231456 Tutar : 132,15 TL</Text>
       </TouchableOpacity>
       </ScrollView>
       </View>
@@ -64,30 +66,26 @@ class BillDetailScreen extends React.Component {
    onValueChange={(itemValue, itemIndex) =>
     this.setState({billType: itemValue})
   }>
-  <Picker.Item label="Elektrik" value="java" />
-  <Picker.Item label="Su" value="js" />
-  <Picker.Item label="Telefon" value="js" />
+  <Picker.Item label="1000002-1001  50 TL" value="java" />
+  <Picker.Item label="1000002-1002  500 TL" value="java" />
+  <Picker.Item label="1000002-1003  250 TL" value="java" />
 </Picker>
 </View >
 <Separator/>
-< TouchableOpacity style={{flexDirection:'row',alignItems:'center'}} >
-       <Image 
-            style={styles.stretch} source={require('./../MyImages/exit2.png')}        />
-            <Text style={{color:'white'}}>   Güvenli Çıkış</Text>
-      </TouchableOpacity>
+
   <View style={{borderRadius: 10, borderWidth: 1, borderColor: '#bdc3c7',backgroundColor:'#CACFD2',height:30}}>
 
-  <TextInput   />
+  <TextInput  placeholder='Aboneliklerime kaydet...'  placeholderTextColor="black" />
 </View >
 <TouchableOpacity  style={[styles.child, {marginTop:20,backgroundColor: '#943126',borderColor: 'white', borderWidth: 3,} ]}
           onPress={() => { alert("Borç Sorgulanıyor"); }}
           >
-          <Text style={{fontSize:25,color:'white'}}>Borç Sorgula - Öde</Text>
+          <Text style={{fontSize:25,color:'white'}}>Borç Öde</Text>
           </TouchableOpacity >
 <Separator/>
        < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}} >
        <Image 
-            style={styles.stretch} source={require('./../MyImages/exit2.png')}        />
+            style={styles.stretch} source={require('./../MyImages/exit2.png')}  />
             <Text style={{color:'white'}}>   Güvenli Çıkış</Text>
       </TouchableOpacity>
 
@@ -131,9 +129,9 @@ class BillDetailScreen extends React.Component {
       flexWrap: 'wrap'
   },
   child: {
-      width: '90%', 
-      marginLeft: '5%',
-      marginRight: '5%', 
+      width: '98%', 
+      marginLeft: '1%',
+      marginRight: '1%', 
       marginBottom:'1%',
       aspectRatio: 8,
       justifyContent: 'center',

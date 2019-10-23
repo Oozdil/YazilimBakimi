@@ -84,7 +84,7 @@ class MyAccountsScreen extends React.Component {
        
         for(var i=0;i<accListCount;i++)
         {
-         let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId;
+          let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId+"-"+responseData['ResultList'][i].AccountBalance;
          let shortAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo;
          board.push( 
          <TouchableOpacity style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} 
@@ -114,7 +114,20 @@ class MyAccountsScreen extends React.Component {
    });    
   }
 
-
+  Logout = () => {
+    Alert.alert(
+      'ÇIKIŞ İŞLEMİ',
+      'Bankacılık Uygulamasından çıkmak emin misiniz?',
+      [        
+        {
+          text: 'Vazgeç',          
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.props.navigation.navigate('Login',{username:'',password:''})},
+      ],
+      {cancelable: false},
+    );
+  }
 
     render() {
       return (
@@ -138,18 +151,16 @@ class MyAccountsScreen extends React.Component {
       </TouchableOpacity>
       <Separator/>
 
-      <ScrollView>
+      <ScrollView >
         <View style={[styles.parent]}>
-      
+          {this.props.navigation.state.params.board}      
+        </View>
+      </ScrollView>
 
-     {this.props.navigation.state.params.board}
-     
-      
-      
-  </View>
-  </ScrollView>
   <Separator/>
-       < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}} >
+       < TouchableOpacity style={{flexDirection:'row',alignItems:'center',marginBottom:15}} 
+       onPress={() => this.Logout()} 
+       >
        <Image 
             style={styles.stretch} source={require('./../MyImages/exit2.png')}        />
             <Text style={{color:'white'}}>   Güvenli Çıkış</Text>

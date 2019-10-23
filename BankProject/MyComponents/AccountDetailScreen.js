@@ -16,6 +16,12 @@ class AccountDetailScreen extends React.Component {
     headerStyle: {backgroundColor: '#17202A',} ,
    
   };
+  constructor(props) {
+    super(props);
+    this.state={
+      Balance:this.props.navigation.state.params.longAccNo.split('-')[3]
+    }
+  }
 
   GetAccounts = () => 
   {
@@ -37,7 +43,7 @@ class AccountDetailScreen extends React.Component {
      
         for(var i=0;i<accListCount;i++)
         {
-         let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId;
+          let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId+"-"+responseData['ResultList'][i].AccountBalance;
          let shortAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo;
          board.push( 
          <TouchableOpacity style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} 
@@ -143,8 +149,25 @@ class AccountDetailScreen extends React.Component {
     var longAcc=this.props.navigation.state.params.longAccNo;   
     this.props.navigation.navigate('PayIntoAccount',{ Customer:Customer,longAccNo:longAcc });
   }
-
-
+  WithDrawMoney = () => {    
+    var Customer=this.props.navigation.state.params.Customer;
+    var longAcc=this.props.navigation.state.params.longAccNo;      
+    this.props.navigation.navigate('WithDrawMoney',{ Customer:Customer,longAccNo:longAcc });
+  }
+  Logout = () => {
+    Alert.alert(
+      'ÇIKIŞ İŞLEMİ',
+      'Bankacılık Uygulamasından çıkmak emin misiniz?',
+      [        
+        {
+          text: 'Vazgeç',          
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.props.navigation.navigate('Login',{username:'',password:''})},
+      ],
+      {cancelable: false},
+    );
+  }
 
     render() {
       return (
@@ -155,10 +178,11 @@ class AccountDetailScreen extends React.Component {
         <SafeAreaView style={styles.container}>
 
       
-        <Text style={{fontSize:20,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
+        <Text style={{fontSize:15,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
-    textShadowRadius: 10}}>HESAP DETAYI ({this.props.navigation.state.params.shortAccNo})</Text>
-  
+    textShadowRadius: 10}}>HESAP NO : ({this.props.navigation.state.params.shortAccNo})    BAKİYE : 
+    {this.state.Balance} TL</Text>
+     
         
 
         <Separator/>
@@ -167,36 +191,77 @@ class AccountDetailScreen extends React.Component {
 
       <View style={{flexDirection:'row',width: '100%'}} >
         
-        < TouchableOpacity style={{flexDirection:'row',alignItems:'center',width: '40%',marginRight:'10%'}} 
+        < TouchableOpacity style={{flexDirection:'row',alignItems:'center',width: '25%',marginRight:'7%'}} 
          onPress={() => {this.PayInto();}}
         >   
        <Image 
-            style={styles.stretch} source={require('./../MyImages/deleteAccount.png')}        />
-          <Text style={{color:'white'}}>   Hesaba Para Yatır</Text>
+            style={styles.stretch} source={require('./../MyImages/newAccount.png')}        />
+          <Text style={{color:'white'}}>   Para Yatır</Text>
       </TouchableOpacity>
 
+      < TouchableOpacity style={{flexDirection:'row',alignItems:'center',width: '25%',marginRight:'5%'}} 
+         onPress={() => {this.WithDrawMoney();}}
+        >   
+       <Image 
+            style={styles.stretch} source={require('./../MyImages/deleteAccount.png')}        />
+          <Text style={{color:'white'}}>   Para Çek</Text>
+      </TouchableOpacity>
 
-      < TouchableOpacity style={{flexDirection:'row',alignItems:'center',width: '40%',marginLeft:'10%'}}
+      < TouchableOpacity style={{flexDirection:'row',alignItems:'center',width: '30%'}}
         onPress={() => { this.DeleteAccountConfirmation(); }}
       > 
        <Image 
-            style={styles.stretch} source={require('./../MyImages/deleteAccount.png')}        />
+            style={styles.stretch} source={require('./../MyImages/removeAccount.png')}        />
           <Text style={{color:'white'}}>   Hesabı Kapat</Text>
       </TouchableOpacity>
       </View>
       <Separator/>
 
+      <Text style={{fontSize:15,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
+    textShadowOffset: {width: -3, height: 3},
+    textShadowRadius: 10}}>HESAP HAREKETLERİNİZ</Text>
+ <Separator/>
+
+
       <ScrollView>
-        <View style={[styles.parent]}>
-      
+        <View style={[styles.parent]}>   
+
+        <View style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} >     
+        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
+        </View>
+        <View style={[styles.child_acc, {backgroundColor: '#F2D2D7'} ]} >     
+        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
+        </View>
+        <View style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} >     
+        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
+        </View>
+        <View style={[styles.child_acc, {backgroundColor: '#F2D2D7'} ]} >     
+        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
+        </View>
+        <View style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} >     
+        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
+        </View>
+        <View style={[styles.child_acc, {backgroundColor: '#F2D2D7'} ]} >     
+        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
+        </View>
+        <View style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} >     
+        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
+        </View>
+        <View style={[styles.child_acc, {backgroundColor: '#F2D2D7'} ]} >     
+        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
+        </View>
+       
+        </View>
+      </ScrollView>
 
 
 
-      
-  </View>
-  </ScrollView>
+
+
   <Separator/>
-       < TouchableOpacity style={{flexDirection:'row',alignItems:'center'}} >
+  < TouchableOpacity style={{flexDirection:'row',alignItems:'center',marginBottom:15}} 
+       onPress={() => this.Logout()} 
+       >
        <Image 
             style={styles.stretch} source={require('./../MyImages/exit2.png')}        />
             <Text style={{color:'white'}}>   Güvenli Çıkış</Text>
@@ -265,8 +330,8 @@ class AccountDetailScreen extends React.Component {
 },
   child_acc: {
     width: '98%', 
-    margin: '1%', 
-    aspectRatio: 5,
+    margin: '0.5%', 
+    aspectRatio: 7,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius:15,

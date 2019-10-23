@@ -15,16 +15,32 @@ class PayIntoAccountScreen extends React.Component {
     };
 
    
-    state = { _amount: '0'  };
    
+    constructor(props) {
+      super(props);
+      this.state={
+        Balance:this.props.navigation.state.params.longAccNo.split('-')[3],
+        Account:this.props.navigation.state.params.longAccNo.split('-')[0]+"-"+this.props.navigation.state.params.longAccNo.split('-')[1],
+        _amount: '0' 
+      }
+    }
 
-    PayIntoAccountConfirmation = () => {
-    
+    PayIntoAccountConfirmation = () => {  
+      var amount=this.state._amount;
+      amount=parseFloat(amount);
+     
+      if(amount==0)
+      {
+        alert("Lütfen geçerli bir tutar giriniz");
+        return;
+      }
+      
+
+
       Alert.alert(
        'PARA YATIRMA',
-       'Hesabınıza '+this.state._amount+'TL yatırmak istediğinize emin misiniz?',
-       [
-         
+       'Hesabınıza '+this.state._amount+' TL yatırmak istediğinize emin misiniz?',
+       [         
          {
            text: 'Vazgeç',          
            style: 'cancel',
@@ -33,8 +49,6 @@ class PayIntoAccountScreen extends React.Component {
        ],
        {cancelable: false},
      ); 
- 
-    
    }
 
 
@@ -62,7 +76,7 @@ class PayIntoAccountScreen extends React.Component {
            
           if(success)
           {
-            Alert.alert('PARA BAŞARI İLE YATIRLIDI',"Hesabınıza "+amount+"TL yatırdınız.");
+            Alert.alert('PARA BAŞARI İLE YATIRLIDI',"Hesabınıza "+amount+" TL yatırdınız.");
             this.GetAccounts();
           }
           else
@@ -98,7 +112,7 @@ class PayIntoAccountScreen extends React.Component {
          
           for(var i=0;i<accListCount;i++)
           {
-           let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId;
+            let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId+"-"+responseData['ResultList'][i].AccountBalance;
            let shortAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo;
            board.push( 
            <TouchableOpacity style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} 
@@ -147,27 +161,48 @@ class PayIntoAccountScreen extends React.Component {
   }
 
 
+  Logout = () => {
+    Alert.alert(
+      'ÇIKIŞ İŞLEMİ',
+      'Bankacılık Uygulamasından çıkmak emin misiniz?',
+      [        
+        {
+          text: 'Vazgeç',          
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.props.navigation.navigate('Login',{username:'',password:''})},
+      ],
+      {cancelable: false},
+    );
+  }
+
     render() {
       return (
         <ImageBackground source={require('./../MyImages/bg_red.jpg')} style={styles.backgroundImage}>   
         {/*Header*/}
         <SafeAreaView style={styles.container}>
+
+          <View style={{alignItems:'center'}}>
         <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
-    textShadowRadius: 10}}>HESAP DETAYI ({this.props.navigation.state.params.shortAccNo})</Text>
+    textShadowRadius: 10}}>HESABA PARA YATIRMA</Text>
+ <Separator/>
+    <Text style={{fontSize:17,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
+    textShadowOffset: {width: -3, height: 3},
+    textShadowRadius: 10}}>HESAP NO : {this.state.Account} BAKİYE : {this.state.Balance} TL</Text>
 
 
      <Separator/>
-     <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
+     <Text style={{fontSize:18,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
     textShadowRadius: 10}}>{'Yatırmak İstediğiniz Tutarı Giriniz (TL) :'}</Text>
      <Separator/>
- 
+     </View>
 
 
       <TextInput 
         style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20,
-        textAlign:'left' }}
+        textAlign:'left',paddingLeft:15}}
         ref= {(el) => { this._amount = el; }}
         // onChangeText={(_amount) => this.setState({_amount})}
         onChangeText={value => this.OnChangeAmount(value)}
@@ -192,7 +227,14 @@ class PayIntoAccountScreen extends React.Component {
           <Text style={{fontSize:25}}>VAZGEÇ</Text>
           </TouchableOpacity >     
        </View>
-    
+       <Separator/>
+       < TouchableOpacity style={{flexDirection:'row',alignItems:'center',marginTop:130}}
+         onPress={() => this.Logout()} 
+       >
+       <Image 
+            style={styles.stretch} source={require('./../MyImages/exit2.png')}  />
+            <Text style={{color:'white'}}> Güvenli Çıkış</Text>
+      </TouchableOpacity>
    </SafeAreaView>     
   
   
@@ -251,8 +293,8 @@ class PayIntoAccountScreen extends React.Component {
     borderColor: '#2C3E50', borderWidth: 3,
   },
   stretch: {
-    width: 50,
-    height: 50,
+    width: 25,
+    height: 25,
     resizeMode: 'stretch'
   }
   });

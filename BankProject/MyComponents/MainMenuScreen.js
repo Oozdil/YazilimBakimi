@@ -56,10 +56,10 @@ class MainMenuScreen extends React.Component {
       .then((response) => response.json())
       .then((responseData) => {
         var accListCount=responseData['ResultList'].length;
-     
+    
         for(var i=0;i<accListCount;i++)
         {
-         let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId;
+         let longAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo+"-"+responseData['ResultList'][i].AccountId+"-"+responseData['ResultList'][i].AccountBalance;
          let shortAcc=Customer.CustomerNo+"-"+ responseData['ResultList'][i].AccountNo;
          board.push( 
          <TouchableOpacity style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} 
@@ -99,6 +99,12 @@ class MainMenuScreen extends React.Component {
     let Customer=this.props.navigation.state.params.Customer;
     let CustomerId=Customer.CustomerId;
 
+
+    outgoingBoard.push(<Picker.Item label="Lütfen hesap seçiniz" value="" />);      
+    inCommingBoard.push(<Picker.Item label="Lütfen hesap seçiniz" value="" />); 
+
+
+
     fetch('http://yazilimbakimi.pryazilim.com/api/AccountService/GetAccountList/'+CustomerId, {
       method: 'GET',
       headers: {
@@ -121,10 +127,10 @@ class MainMenuScreen extends React.Component {
          var AccInfo=CustomerNo+"-"+AccountNo+"-("+Balance+" TL)";
          var AccInfo2=AccountId+"-"+Balance;
          
-         outgoingBoard.push(<Picker.Item label={AccInfo}value={AccInfo2} />);      
+         outgoingBoard.push(<Picker.Item label={AccInfo} value={AccInfo2} />);      
         
          //if(i>0)
-         inCommingBoard.push(<Picker.Item label={AccInfo}value={AccInfo2} />);     
+         inCommingBoard.push(<Picker.Item label={AccInfo} value={AccInfo2} />);     
         }
       
 
@@ -154,6 +160,57 @@ class MainMenuScreen extends React.Component {
 
 
 
+/*Test*/
+state = {
+  timer: null,
+  counter: 0,
+  fullname:this.props.navigation.state.params.Customer.Name+ " "+this.props.navigation.state.params.Customer.Surname,
+  totalBalance:this.props.navigation.state.params.Customer.TotalBalance
+};
+
+componentDidMount() {
+  let timer = setInterval(this.tick, 1000);
+  this.setState({timer});
+}
+
+componentWillUnmount() {
+  this.clearInterval(this.state.timer);
+}
+
+tick =() => {
+
+  if(this.state.counter==15)
+  {
+  this.RefreshCustomer();
+  this.setState({counter: 0}); 
+}
+  this.setState({counter: this.state.counter + 1});
+}
+
+RefreshCustomer = () => {
+  var CustomerNo=this.props.navigation.state.params.Customer.CustomerNo;
+  fetch('http://yazilimbakimi.pryazilim.com/api/CustomerService/GetCustomerDetailByNo/'+CustomerNo, 
+  {
+    method: 'GET',
+    headers: {'Accept': 'application/json','Content-Type': 'application/json'},     
+   }).then((response) => response.json())
+    .then((responseData) =>
+     {
+       var fname=responseData['ResultObj'].Name+" "+responseData['ResultObj'].Surname;
+       var tbalance=responseData['ResultObj'].TotalBalance;
+       this.setState({fullname:fname,totalBalance:tbalance});          
+    })
+    .catch((error) =>{
+      alert(error);
+    }) 
+}
+
+/*Test*/
+
+
+
+
+
 
 
 
@@ -169,7 +226,7 @@ class MainMenuScreen extends React.Component {
        
 
        <Text style={{color:'white',fontSize:18}}>Sayın : 
-       {this.props.navigation.state.params.Customer.Name} {this.props.navigation.state.params.Customer.Surname} (
+       {this.state.fullname}  (
        {this.props.navigation.state.params.Customer.CustomerNo} )
        </Text>
        <Separator/>
@@ -177,6 +234,10 @@ class MainMenuScreen extends React.Component {
         <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
     textShadowRadius: 10}}>{'İşlemler Menüsü'}</Text>
+        <Separator/>
+        <Text style={{fontSize:18,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
+    textShadowOffset: {width: -3, height: 3},
+    textShadowRadius: 10}}>{'Varlıklarım : '}{this.state.totalBalance} TL</Text>
         <Separator/>
         <View style={[styles.parent]}>
    
@@ -223,7 +284,7 @@ class MainMenuScreen extends React.Component {
        <Text>Kredi Tahminim</Text>
        </TouchableOpacity>
        <TouchableOpacity style={[styles.child_2, {backgroundColor: '#D5DBDB'} ]}       
-      onPress={() => this.props.navigation.navigate('PersonalDetail',{CustomerNo:this.props.navigation.state.params.CustomerNo})}      >
+      onPress={() => this.props.navigation.navigate('PersonalDetail',{Customer:this.props.navigation.state.params.Customer})}      >
        <Text>Kişisel Bilgilerimi Güncelle</Text>
       </TouchableOpacity>
   </View>
@@ -286,7 +347,7 @@ class MainMenuScreen extends React.Component {
   child_2: {
     width: '98%', 
     margin: '1%', 
-    aspectRatio: 4,
+    aspectRatio: 4.5,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius:15,

@@ -1,7 +1,10 @@
 import * as React from 'react';
-import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,TextInput,Image,TouchableOpacity } from 'react-native';
+import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,
+  TextInput,Image,TouchableOpacity,ScrollView} from 'react-native';
 
 import Constants from 'expo-constants';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
 
 
 function Separator() {
@@ -18,25 +21,34 @@ class CreditPredictionScreen extends React.Component {
 
   state = { TCKN: '', name: '',sname: '',email: '',password: '',passwordRep: '' };
 
-  Register = () => {
-      
-    var _TCKN=this.state.TCKN;
-    var _name=this.state.name;
-    var _sname=this.state.sname;
-    var _email=this.state.email;
-    var _password=this.state.password;
-    var _passwordRep=this.state.passwordRep;
-   
-   alert("Kayı yapılıyor : "+_TCKN+" "+_name+" "+_sname+" "+_email+" "+_password+" "+_passwordRep);
-   this.props.navigation.navigate('Login');
-    
+  CreditPrediction = () => {    
+   alert("Alabileceğiniz kredi tutarı 150.000 TL");     
    }
+
+
+ 
+
+
+
+
+
+
+
+
+
 
 
     render() {
       return (
         <ImageBackground source={require('./../MyImages/bg_red.jpg')} style={styles.backgroundImage}>   
         {/*Header*/}
+
+        <KeyboardAwareScrollView enableOnAndroid={true}     
+      resetScrollToCoords={{ x: 0, y: 0 }}  
+      scrollEnabled={false}
+      extraScrollHeight={100}
+    >
+        <ScrollView >
         <SafeAreaView style={styles.container}>   
      <Text style={{fontSize:25,textShadowColor: 'rgba(0, 0, 0, 0.75)',color:'white',
     textShadowOffset: {width: -3, height: 3},
@@ -45,7 +57,7 @@ class CreditPredictionScreen extends React.Component {
 
 
 
-      <Text style={{fontSize:15}}>T.C. Kimlik Numaranız</Text>
+      <Text style={{fontSize:15}}>Kriter 1</Text>
       <TextInput 
        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.TCKN = el; }}
@@ -54,7 +66,7 @@ class CreditPredictionScreen extends React.Component {
         style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
 
 
-     <Text style={{fontSize:15}}>Adınız</Text>
+      <Text style={{fontSize:15}}>Kriter 1</Text>
      <TextInput 
        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.name = el; }}
@@ -63,7 +75,7 @@ class CreditPredictionScreen extends React.Component {
         style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
 
 
-     <Text style={{fontSize:15}}>Soyadınız</Text>
+      <Text style={{fontSize:15}}>Kriter 1</Text>
      <TextInput 
        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.sname = el; }}
@@ -74,7 +86,7 @@ class CreditPredictionScreen extends React.Component {
 
   
         
-     <Text style={{fontSize:15}}>Email Adresiniz</Text>
+      <Text style={{fontSize:15}}>Kriter 1</Text>
      <TextInput 
        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.email = el; }}
@@ -86,7 +98,7 @@ class CreditPredictionScreen extends React.Component {
 
 
 
-      <Text style={{fontSize:15}}>Şifreniz</Text>  
+      <Text style={{fontSize:15}}>Kriter 1</Text> 
       <TextInput secureTextEntry={true}
        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.password = el; }}
@@ -94,7 +106,7 @@ class CreditPredictionScreen extends React.Component {
        value={this.state.password}
         style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
 
-      <Text style={{fontSize:15}}>Şifreniz Tekrar</Text>  
+      <Text style={{fontSize:15}}>Kriter 1</Text>
       <TextInput secureTextEntry={true}
        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
        ref= {(el) => { this.passwordRep = el; }}
@@ -109,16 +121,18 @@ class CreditPredictionScreen extends React.Component {
 
       <View style={[styles.parent]}>
           <TouchableOpacity  style={[styles.child, {backgroundColor: '#943126',borderColor: 'white', borderWidth: 3,} ]}
-          onPress={() => { this.Register(); }}
+          onPress={() => { this.CreditPrediction(); }}
           >
-          <Text style={{fontSize:25,color:'white'}}>KAYIT OL</Text>
+          <Text style={{fontSize:25,color:'white'}}>KREDİMİ TAHMİN ET</Text>
           </TouchableOpacity >         
          
        </View>
 
 
    </SafeAreaView>     
+   </ScrollView >
   
+   </KeyboardAwareScrollView>
   
        
         </ImageBackground>
