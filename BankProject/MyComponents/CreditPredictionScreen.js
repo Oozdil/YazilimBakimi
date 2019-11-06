@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, View, Text,ImageBackground, StyleSheet,SafeAreaView,
-  TextInput,Image,TouchableOpacity,ScrollView} from 'react-native';
+  TextInput,Image,TouchableOpacity,ScrollView,Alert,Picker} from 'react-native';
 
 import Constants from 'expo-constants';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -19,22 +19,129 @@ class CreditPredictionScreen extends React.Component {
     headerStyle: {backgroundColor: '#17202A',} 
   };
 
-  state = { TCKN: '', name: '',sname: '',email: '',password: '',passwordRep: '' };
+  state = { creditAmount: '0', age: '18',ownHouse: '0',prevCreds: '0',ownPhone:'0'};
 
   CreditPrediction = () => {    
-   alert("Alabileceğiniz kredi tutarı 150.000 TL");     
+   var name=this.props.navigation.state.params.Customer.Name;
+   var surname=this.props.navigation.state.params.Customer.Surname;
+
+
+
+   var customerid=this.props.navigation.state.params.Customer.CustomerId;
+   var creditAmount=this.state.creditAmount;
+   var age=this.state.age;
+   var ownHouse=this.state.ownHouse;
+   var prevCreds=this.state.prevCreds;
+   var ownPhone=this.state.ownPhone;
+
+   
+
+
+   fetch('http://www.orcunozdil.site/Add.aspx?p1='+customerid+'&p2='+creditAmount+'&p3='+age+
+   '&p4='+ownHouse+'&p5='+prevCreds+'&p6='+ownPhone, 
+   {
+     method: 'GET',
+     headers: {'Accept': 'application/json','Content-Type': 'application/json'},     
+    }).then((response) => response.json())
+     .then((responseData) =>
+      {
+        var sonuc=JSON.stringify(responseData);
+        if(sonuc=="1")
+        {
+          alert("Sayın Orçun Özdil, kredi tahmin sonucunuzu, 'Sorgu Geçmişim'den öğrenebilirsiniz!");
+          this.setState({ creditAmount: '0', age: '18',ownHouse: '0',prevCreds: '0',ownPhone:'0'});
+        }
+        else{
+          alert("Bir hata oluştu!"+sonuc);
+        }
+     })
+     .catch((error) =>{
+       alert(error);
+     }) 
+
+
+
    }
 
 
+    PreviousPredictions = () => {  
+    
+    
+    this.props.navigation.navigate('PredictionHistory',{Customer:this.props.navigation.state.params.Customer})    
+    }
  
 
+ 
+
+    OnCreditAmount(value) { 
+      value=value.replace(',','.');
+      if(value.length==2 && value[0]=='0' && value[1]!='.')
+      value=value[1];
+  
+  
+      if(value.split('.').length>2)
+      {
+        value=value.substring(0,value.length-1);     
+      }
+  
+      if(value.split('.').length==2 && value.split('.')[1].length==3)
+      value=value.substring(0,value.length-1);
+  
+  
+      this.setState({creditAmount:value})
+     
+    }
+
+    OnChangePrevCredCount=(value)=>
+    {
+     
+      var lastChar=value[value.length-1];
+      var numbers="0123456789";
+     
+      //Sayı mı?
+      if(numbers.includes(lastChar))
+      {
+        if(value.length==2 && value[0]=='0' )
+        value=value[1];
+
+        this.setState({prevCreds:value})
+      }
+      if(value.length==0)
+      this.setState({prevCreds:value})
+    }
+    OnChangeAge=(value)=>
+    {
+      var lastChar=value[value.length-1];
+      var numbers="0123456789";
+     
+      //Sayı mı?
+      if(numbers.includes(lastChar))
+      {
+        if(value.length==2 && value[0]=='0' )
+        value=value[1];
+
+        this.setState({age:value})
+      }
+      if(value.length==0)
+      this.setState({age:value})
+      
+    }
 
 
-
-
-
-
-
+   Logout = () => {
+    Alert.alert(
+      'ÇIKIŞ İŞLEMİ',
+      'Bankacılık Uygulamasından çıkmak emin misiniz?',
+      [        
+        {
+          text: 'Vazgeç',          
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.props.navigation.navigate('Login',{username:'',password:''})},
+      ],
+      {cancelable: false},
+    );
+  }
 
 
 
@@ -57,62 +164,94 @@ class CreditPredictionScreen extends React.Component {
 
 
 
-      <Text style={{fontSize:15}}>Kriter 1</Text>
-      <TextInput 
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.TCKN = el; }}
-       onChangeText={(TCKN) => this.setState({TCKN})}
-       value={this.state.TCKN}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+      <Text style={{fontSize:15}}>İstediğiniz Kredi Miktarı :</Text>
+  
+      <View style={{borderRadius: 10, borderWidth: 1, borderColor: '#bdc3c7',backgroundColor:'#CACFD2',height:40}}>
+       <TextInput 
+        style={{ height: 40, fontSize:20,
+        textAlign:'left' }}
+        ref= {(el) => { this.creditAmount = el; }}     
+        onChangeText={value => this.OnCreditAmount(value)}
+        value={this.state.creditAmount}
+        maxLength={12}
+        keyboardType={'numeric'}
+        />
+       </View >
 
 
-      <Text style={{fontSize:15}}>Kriter 1</Text>
-     <TextInput 
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.name = el; }}
-       onChangeText={(name) => this.setState({name})}
-       value={this.state.name}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
 
 
-      <Text style={{fontSize:15}}>Kriter 1</Text>
-     <TextInput 
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.sname = el; }}
-       onChangeText={(sname) => this.setState({sname})}
-       value={this.state.sname}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
 
+      <Text style={{fontSize:15}}>Yaşınız :</Text>
+       <View style={{borderRadius: 10, borderWidth: 1, borderColor: '#bdc3c7',backgroundColor:'#CACFD2',height:40}}>
+          <TextInput  
+            style={{ height: 40, fontSize:20,
+            textAlign:'left' }}
+            ref= {(el) => { this.age = el; }}     
+            onChangeText={value => this.OnChangeAge(value)}
+            value={this.state.age}
+            keyboardType={'numeric'}
+            maxLength={2}
+          />
+        </View >
+
+
+
+
+
+
+
+
+
+
+
+
+      <Text style={{fontSize:15}}>Ev Durumunuz :</Text>
+      <View style={{height: 35,borderRadius: 10, borderWidth: 1, borderColor: '#bdc3c7', overflow: 'hidden',backgroundColor:'#CACFD2'}}>
+         <Picker
+        selectedValue={this.state.ownHouse}
+        onValueChange={(itemValue, itemIndex) =>
+          this.setState({ownHouse: itemValue})
+        }>
+        <Picker.Item label="Kira" value="0" />
+        <Picker.Item label="Kendi Evim" value="1" />     
+      </Picker>
+      </View>
 
   
         
-      <Text style={{fontSize:15}}>Kriter 1</Text>
-     <TextInput 
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.email = el; }}
-       onChangeText={(email) => this.setState({email})}
-       value={this.state.email}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+      <Text style={{fontSize:15}}>Önceden Aldığınız Kredi Sayısı :</Text>
+    
+         <View style={{borderRadius: 10, borderWidth: 1, borderColor: '#bdc3c7',backgroundColor:'#CACFD2',height:40}}>
+          <TextInput  
+            style={{ height: 40, fontSize:20,
+            textAlign:'left' }}
+            ref= {(el) => { this.prevCreds = el; }}     
+            onChangeText={value => this.OnChangePrevCredCount(value)}
+            value={this.state.prevCreds}
+            keyboardType={'numeric'}
+            maxLength={2}
+          />
+        </View >
 
 
 
 
 
-      <Text style={{fontSize:15}}>Kriter 1</Text> 
-      <TextInput secureTextEntry={true}
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.password = el; }}
-       onChangeText={(password) => this.setState({password})}
-       value={this.state.password}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+      <Text style={{fontSize:15}}>Kendinize Ait Telefonunuz :</Text> 
+    
+         <View style={{height: 35,borderRadius: 10, borderWidth: 1, borderColor: '#bdc3c7', overflow: 'hidden',backgroundColor:'#CACFD2'}}>
+         <Picker
+        selectedValue={this.state.ownPhone}
+        onValueChange={(itemValue, itemIndex) =>
+          this.setState({ownPhone: itemValue})
+        }>
+        <Picker.Item label="Telefonum Yok" value="0" />
+        <Picker.Item label="Telefonum Var" value="1" />     
+      </Picker>
+      </View>
 
-      <Text style={{fontSize:15}}>Kriter 1</Text>
-      <TextInput secureTextEntry={true}
-       style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white',fontSize:20 }}
-       ref= {(el) => { this.passwordRep = el; }}
-       onChangeText={(passwordRep) => this.setState({passwordRep})}
-       value={this.state.passwordRep}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1,borderRadius:5,backgroundColor:'white' }}/>
+      
 
 
         <Separator/>
@@ -123,11 +262,23 @@ class CreditPredictionScreen extends React.Component {
           <TouchableOpacity  style={[styles.child, {backgroundColor: '#943126',borderColor: 'white', borderWidth: 3,} ]}
           onPress={() => { this.CreditPrediction(); }}
           >
-          <Text style={{fontSize:25,color:'white'}}>KREDİMİ TAHMİN ET</Text>
+          <Text style={{fontSize:15,color:'white'}}>KREDİ TAHMİNİM</Text>
           </TouchableOpacity >         
          
-       </View>
+          <TouchableOpacity  style={[styles.child, {backgroundColor: '#D5DBDB',borderColor: 'white', borderWidth: 3,} ]}
+          onPress={() => { this.PreviousPredictions(); }}
+          >
+          <Text style={{fontSize:15}}>SORGU GEÇMİŞİM</Text>
+          </TouchableOpacity > 
 
+       </View>
+       < TouchableOpacity style={{flexDirection:'row',alignItems:'center',marginTop:25}}
+         onPress={() => this.Logout()} 
+       >
+       <Image 
+            style={styles.stretch} source={require('./../MyImages/exit2.png')}  />
+            <Text style={{color:'white'}}> Güvenli Çıkış</Text>
+      </TouchableOpacity>
 
    </SafeAreaView>     
    </ScrollView >
@@ -171,17 +322,18 @@ class CreditPredictionScreen extends React.Component {
       flexWrap: 'wrap'
   },
   child: {
-      width: '98%', 
+      width: '48%', 
       margin: '1%', 
-      aspectRatio: 7,
+      aspectRatio: 3,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius:15
   },
   stretch: {
-    width: 50,
-    height: 50,
-    resizeMode: 'stretch'
+    width: 25,
+    height: 25,
+    resizeMode: 'stretch',
+  
   }
   });
 

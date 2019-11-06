@@ -159,6 +159,65 @@ class MainMenuScreen extends React.Component {
   }
 
 
+  GotoBillScreen = () => 
+  {    
+    let recordedBills = [];
+    let Customer=this.props.navigation.state.params.Customer;
+    let CustomerId=Customer.CustomerId;
+    recordedBills.push( <Picker.Item label="Kayıtlı Faturalarım" value="0" />);      
+   
+
+
+
+    fetch('http://yazilimbakimi.pryazilim.com/api/InvoiceService/SubscriberList/'+CustomerId, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }
+  })
+  
+      .then((response) => response.json())
+      .then((responseData) => {
+        // alert(JSON.stringify(responseData));
+      var accListCount=responseData['ResultList'].length;
+      var bulunanlar=[];
+        for(var i=0;i<accListCount;i++)
+        {
+         var AboneNo=responseData['ResultList'][i].SubscriberNo;
+         var SirketAdi=responseData['ResultList'][i].CompanyName;         
+         var Tanim=responseData['ResultList'][i].Description;
+
+         if(!bulunanlar.includes(AboneNo))
+          {        
+            bulunanlar.push(AboneNo);
+          recordedBills.push( <Picker.Item label={AboneNo +"-"+ SirketAdi +"-"+ Tanim} value={AboneNo +"-"+ SirketAdi} />);     
+          } 
+        }     
+
+       this.props.navigation.navigate('Bill',{recordedBills:recordedBills,
+          Customer:this.props.navigation.state.params.Customer});
+
+  })
+  .catch((error) =>{
+  alert(error);
+  }) 
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*Test*/
 state = {
@@ -169,12 +228,19 @@ state = {
 };
 
 componentDidMount() {
+  try{
   let timer = setInterval(this.tick, 1000);
   this.setState({timer});
+  }
+  catch{}
 }
 
 componentWillUnmount() {
+  try{
   this.clearInterval(this.state.timer);
+  }
+  catch{}
+  
 }
 
 tick =() => {
@@ -274,13 +340,14 @@ RefreshCustomer = () => {
        <Text>Havale</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]}
-        onPress={() => this.props.navigation.navigate('Bill')}
+       // onPress={() => this.props.navigation.navigate('Bill')}
+        onPress={() => this.GotoBillScreen()} 
       >
        <Text>Fatura Ödeme</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.child, {backgroundColor: '#D5DBDB'} ]} 
-         onPress={() => this.props.navigation.navigate('CreditPrediction')} 
-         >
+       onPress={() => this.props.navigation.navigate('CreditPrediction',{Customer:this.props.navigation.state.params.Customer})} 
+  >
        <Text>Kredi Tahminim</Text>
        </TouchableOpacity>
        <TouchableOpacity style={[styles.child_2, {backgroundColor: '#D5DBDB'} ]}       

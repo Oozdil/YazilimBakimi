@@ -19,7 +19,10 @@ class AccountDetailScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state={
-      Balance:this.props.navigation.state.params.longAccNo.split('-')[3]
+      Balance:this.props.navigation.state.params.longAccNo.split('-')[3],
+      timer: null,
+      counter: 0,
+      MovementList:[]
     }
   }
 
@@ -169,6 +172,136 @@ class AccountDetailScreen extends React.Component {
     );
   }
 
+
+
+/*Test*/
+
+
+componentDidMount() {
+  try{
+  let timer = setInterval(this.tick, 1000);
+  this.setState({timer});
+  }
+  catch{}
+}
+
+componentWillUnmount() {
+  try{
+  this.clearInterval(this.state.timer);
+  }
+  catch{}
+}
+
+tick =() => {
+
+  if(this.state.counter==0 || this.state.counter==1)
+  {
+  this.RefreshAccountMovements();
+  
+}
+
+if(this.state.counter==15)
+{
+this.setState({counter: 0}); 
+}
+  this.setState({counter: this.state.counter + 1});
+}
+
+RefreshAccountMovements = () => {
+  var CustomerId=this.props.navigation.state.params.Customer.CustomerId;
+  var CustomerNo=this.props.navigation.state.params.Customer.CustomerNo;
+  var AccountNo=this.props.navigation.state.params.shortAccNo.split('-')[1];
+ 
+  let myMoves = [];
+
+  fetch('http://yazilimbakimi.pryazilim.com/api/InvoiceService/InvoiceAccountActionList/'+CustomerId, 
+  {
+    method: 'GET',
+    headers: {'Accept': 'application/json','Content-Type': 'application/json'},     
+   }).then((response) => response.json())
+    .then((responseData) =>
+     {
+      var moveCount=responseData['ResultList'].length;
+     
+      for(var i=0;i<moveCount;i++)
+        {
+         var Aciklama=responseData['ResultList'][i].Description;         
+
+         var AciklamaDetayi=responseData['ResultList'][i].ActionDescription;
+         if(AciklamaDetayi==null){AciklamaDetayi="";}
+
+         var IslemiYapanHesapNo=responseData['ResultList'][i].AccountNo;         
+         var Tutar=responseData['ResultList'][i].Total;    
+
+         var FaturaId=responseData['ResultList'][i].InvoiceId;
+         var FaturaSirket=responseData['ResultList'][i].InvoiceCompanyName;
+         var FaturaAy=responseData['ResultList'][i].InvoiceMonth;
+         var FaturaYil=responseData['ResultList'][i].InvoiceYear; 
+         if(FaturaId==0){FaturaId="";FaturaSirket="";FaturaAy="";FaturaYil="";}
+
+         var TarihSaat=responseData['ResultList'][i].CreatedDate;
+         var Tarih=TarihSaat.substring(0, 10);
+         var Saat=TarihSaat.substring(11, 19);
+         
+         var KarsiHesapNo=responseData['ResultList'][i].TargetAccountNo; 
+         var KarsiMusteriNo=responseData['ResultList'][i].TargetCustomerNo;
+         var KarsiMusteriAdi=responseData['ResultList'][i].TargetNameSurname;
+         if(KarsiHesapNo==null){KarsiHesapNo="";}
+         if(KarsiMusteriNo==null){KarsiMusteriNo="";}
+         if(KarsiMusteriAdi==null){KarsiMusteriAdi="";}
+         var renk="#90ee90";
+          if(Aciklama.includes('Gönderilen') || Aciklama.includes('Fatura')|| Aciklama.includes('Çekme'))
+          {
+            renk="#f8d2f8";
+          }
+         
+         
+          var detay="İşlemi Yapan : "+IslemiYapanHesapNo+ 
+                " \nKarşı Hesap : "+KarsiHesapNo+" "+KarsiMusteriAdi+" ("+KarsiMusteriNo+")"+
+                "("+FaturaId+" "+FaturaSirket+" "+FaturaAy+"/"+FaturaYil+")"+
+                " \nAçıklama : "+Aciklama+" "+AciklamaDetayi+
+                " \nTutar : "+Tutar+ " TL"+
+                " \nTarih : "+Tarih+" "+Saat;
+        
+           detay=detay.replace("()", "").replace("(  /)", "").trim();
+         
+          if(AccountNo==IslemiYapanHesapNo)
+          myMoves.push(<View style={{backgroundColor:renk,width:'100%',marginBottom:5,
+          borderRadius:10,padding:10,borderColor: '#2C3E50', borderWidth: 3,}}><Text>{detay}</Text></View>);
+         
+       
+
+     
+        
+        }       
+
+        this.setState({MovementList:myMoves});
+    })
+    .catch((error) =>{
+      alert(error);
+    }) 
+
+}
+
+/*Test*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     render() {
       return (
        
@@ -224,32 +357,11 @@ class AccountDetailScreen extends React.Component {
 
 
       <ScrollView>
+      
         <View style={[styles.parent]}>   
-
-        <View style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} >     
-        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
-        </View>
-        <View style={[styles.child_acc, {backgroundColor: '#F2D2D7'} ]} >     
-        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
-        </View>
-        <View style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} >     
-        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
-        </View>
-        <View style={[styles.child_acc, {backgroundColor: '#F2D2D7'} ]} >     
-        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
-        </View>
-        <View style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} >     
-        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
-        </View>
-        <View style={[styles.child_acc, {backgroundColor: '#F2D2D7'} ]} >     
-        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
-        </View>
-        <View style={[styles.child_acc, {backgroundColor: '#D5DBDB'} ]} >     
-        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
-        </View>
-        <View style={[styles.child_acc, {backgroundColor: '#F2D2D7'} ]} >     
-        <Text >Hesap Hareketleri Buraya Gelecek</Text>   
-        </View>
+        
+        {this.state.MovementList} 
+       
        
         </View>
       </ScrollView>

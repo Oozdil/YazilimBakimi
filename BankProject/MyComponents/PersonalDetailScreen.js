@@ -67,7 +67,7 @@ class PersonalDetailScreen extends React.Component {
   var address=this.state.Address;
   var CId=this.state.CustomerId;
 
-  alert("Güncelleniyor :"+email+" "+name+" "+sname+" "+address+" "+CId);  
+ // alert("Güncelleniyor :"+email+" "+name+" "+sname+" "+address+" "+CId);  
   fetch('http://yazilimbakimi.pryazilim.com/api/customerservice/update', 
   {
     method: 'POST',

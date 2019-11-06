@@ -16,8 +16,8 @@ class LoginScreen extends React.Component {
 
    
 
-   //  state = { username: '', password: '' };
-    state = { username: '51475223166', password: '12345678' };
+     state = { username: '', password: '' };
+    //state = { username: '51475223166', password: '12345678' };
 
     Login = () => {
       var uname=this.state.username;
